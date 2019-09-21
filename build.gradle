@@ -1,0 +1,38 @@
+plugins {
+    id 'org.springframework.boot' version '2.1.8.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+    id 'java'
+}
+
+group = 'com.hegp'
+version = '1.0.0'
+sourceCompatibility = '1.8'
+
+repositories {
+    mavenLocal()
+    maven { url "http://maven.aliyun.com/nexus/content/groups/public" }
+    maven { url "https://maven.aliyun.com/repository/central" }
+    maven { url "https://maven.aliyun.com/repository/jcenter" }
+    maven { url "https://maven.aliyun.com/repository/apache-snapshots" }
+    maven { url "https://maven.aliyun.com/repository/google" }
+    maven { url "https://maven.aliyun.com/repository/gradle-plugin" }
+    maven { url "https://maven.aliyun.com/repository/spring" }
+    maven { url "https://maven.aliyun.com/repository/spring-plugin" }
+    maven { url "https://maven.aliyun.com/repository/public" }
+    maven { url "https://maven.aliyun.com/repository/releases" }
+    maven { url "https://maven.aliyun.com/repository/snapshots" }
+    maven { url "https://maven.aliyun.com/repository/grails-core"}
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly 'org.projectlombok:lombok:1.18.10'
+    implementation 'io.springfox:springfox-swagger2:2.9.2'
+    implementation 'mysql:mysql-connector-java:5.1.48'
+    implementation 'org.freemarker:freemarker:2.3.29'
+    implementation 'com.baomidou:mybatis-plus-generator:3.2.0'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    testImplementation 'mysql:mysql-connector-java:5.1.48'
+    testImplementation 'org.freemarker:freemarker:2.3.29'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
