@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 <#if swagger2>
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -34,6 +35,9 @@ import java.util.List;
  * @author ${author}
  * @since ${date}
  */
+<#if swagger2>
+@Api(tags = "${entity}对象", description = "${table.comment!}")
+</#if>
 <#if restControllerStyle>
 @RestController
 <#else>

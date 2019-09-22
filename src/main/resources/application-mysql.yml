@@ -1,0 +1,55 @@
+server.port: 8083
+
+spring:
+  application:
+    name: mybatis-plus-generator-example
+  datasource:
+    username: root
+    password: root
+    url: jdbc:mysql://localhost:3306/test?useUnicode=true&useSSL=false&characterEncoding=utf8
+    driver-class-name: com.mysql.jdbc.Driver
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      max-lifetime: 1830000
+      maximum-pool-size: 10
+  jpa:
+    database: mysql
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL57Dialect
+        enable_lazy_load_no_trans: true
+        temp.use_jdbc_metadata_defaults: false
+  jackson.serialization.write-dates-as-timestamps: true
+  tomcat:
+    uri-encoding: UTF-8
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+
+mybatis-plus:
+  global-config:
+    db-config:
+      insert-strategy: ignored
+      update-strategy: ignored
+  refresh-mapper: true
+  mapper-locations: classpath:mapper/*Mapper.xml
+#  type-aliases-package: com.ascs.xinfangguanli.pojo
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    call-setters-on-nulls: true
+    return-instance-for-empty-row: true
+    map-underscore-to-camel-case: true
+
+logging:
+  level:
+    org.apache.ibatis.logging.stdout.StdOutImpl: debug
+
+#请求处理的超时时间
+ribbon.ReadTimeout: 3000
+#请求连接的超时时间
+ribbon.ConnectTimeout: 3000
+

@@ -21,7 +21,7 @@ public class CodeGenerator {
      * strategy.setSuperEntityColumns("字段名1", "字段名2") 只有设置了公共父类, 才可以设置父类的公共字段, 设置了这些字段后, 子类就不会生成,
      */
     /**
-     * 细数mybatis-plus-generator:3.2.0版本的官方代码生成器缺陷(不知道他们怎么设计的)
+     * mybatis-plus-generator:3.2.0版本的官方代码生成器的坑
      * 1) 必须手动设置 IdType 的主键类型, 否则即使数据库表的主键是varchar(32), mybatis-plus-generator:3.2.0生成的主键字段是 Integer类型, 并且配置了 @TableId(type = IdType.AUTO)
      */
     /** mysql查询某个数据库的所有表名
@@ -33,11 +33,12 @@ public class CodeGenerator {
        ) AS new_table;
      */
     // 数据库参数
-    public static String driverName = "com.mysql.jdbc.Driver";
-    public static String dbUsername = "root";
-    public static String dbPassword = "root";
+//    public static String driverName = "com.mysql.jdbc.Driver";
+    public static String driverName = "org.postgresql.Driver";
+    public static String dbUsername = "sde";
+    public static String dbPassword = "postgres";
     public static String dbSchema = "public";
-    public static String url = "jdbc:mysql://localhost:3306/easyweb-shiro?useUnicode=true&useSSL=false&characterEncoding=utf8";
+    public static String url = "jdbc:postgresql://localhost:5432/test?useUnicode=true&useSSL=false&characterEncoding=utf8";
 
     // 模块名称
     public static String author = "hgp";
