@@ -29,7 +29,7 @@ import java.util.List;
 
 /**
  * <p>
- * ${table.comment!} 前端控制器
+ * ${table.comment!}
  * </p>
  *
  * @author ${author}
@@ -44,9 +44,6 @@ import java.util.List;
 @Controller
 </#if>
 @RequestMapping("<#if package.ModuleName??>/${package.ModuleName}</#if>/<#if controllerMappingHyphenStyle??>${controllerMappingHyphen}<#else>${table.entityPath}</#if>")
-<#if kotlin>
-class ${table.controllerName}<#if superControllerClass??> : ${superControllerClass}()</#if>
-<#else>
 <#if superControllerClass??>
 public class ${table.controllerName} extends ${superControllerClass} {
 <#else>
@@ -127,4 +124,3 @@ public class ${table.controllerName} {
         return ${table.entityName?uncap_first}Service.page(page, queryWrapper);
     }
 }
-</#if>

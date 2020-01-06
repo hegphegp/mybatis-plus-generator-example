@@ -9,8 +9,14 @@ import com.baomidou.mybatisplus.generator.config.po.TableInfo;
 import com.baomidou.mybatisplus.generator.config.rules.DateType;
 import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
 import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import org.apache.commons.io.FileUtils;
 import org.springframework.util.StringUtils;
 
+import java.io.File;
+import java.io.IOException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -32,13 +38,19 @@ public class CodeGenerator {
            SELECT table_name FROM information_schema.tables WHERE table_schema='数据库名'
        ) AS new_table;
      */
+    /**
+     * postgresql查询某个数据库的所有表名
+     * select string_agg(tablename,',') as tablename from pg_tables where schemaname='public'
+     */
+    public static HikariDataSource hikariDataSource = null;
     // 数据库参数
-//    public static String driverName = "com.mysql.jdbc.Driver";
-    public static String driverName = "org.postgresql.Driver";
+    public static String driverName = "com.mysql.jdbc.Driver";
+//    public static String driverName = "org.postgresql.Driver";
     public static String dbUsername = "root";
-    public static String dbPassword = "icityDB2018!@#";
+    public static String dbPassword = "root";
     public static String dbSchema = "public";
-    public static String url = "jdbc:postgresql://localhost:5432/icity?useUnicode=true&useSSL=false&characterEncoding=utf8";
+//    public static String dbUrl = "jdbc:postgresql://localhost:5432/icity?useUnicode=true&useSSL=false&characterEncoding=utf8";
+    public static String dbUrl = "jdbc:mysql://localhost:3306/xxl_job?useUnicode=true&useSSL=false&characterEncoding=utf8";
 
     // 模块名称
     public static String author = "hgp";
@@ -83,7 +95,9 @@ public class CodeGenerator {
         throw new MybatisPlusException("请输入正确的" + tip + "！");
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, SQLException {
+        setHikariDataSource();
+
         // 代码生成器
         AutoGenerator mpg = new AutoGenerator();
 
@@ -101,22 +115,14 @@ public class CodeGenerator {
 
         // 数据源配置
         DataSourceConfig dsc = new DataSourceConfig();
-        dsc.setUrl(url);
+        dsc.setUrl(dbUrl);
         dsc.setSchemaName(dbSchema);
         dsc.setDriverName(driverName);
         dsc.setUsername(dbUsername);
         dsc.setPassword(dbPassword);
         mpg.setDataSource(dsc);
 
-        // 包名配置
-        PackageConfig pc = new PackageConfig();
-        pc.setModuleName(moduleName);
-        pc.setParent(basePackage);
-        pc.setController(controllerPackageName);
-        pc.setService(servicePackageName);
-        pc.setServiceImpl(servicePackageName+".impl");
-        pc.setMapper(mapperPackageName);
-        pc.setEntity(modelPackageName);
+        PackageConfig pc = setPackageConfig();
         mpg.setPackageInfo(pc);
 
         // 自定义配置
@@ -165,17 +171,76 @@ public class CodeGenerator {
         strategy.setEntityTableFieldAnnotationEnable(entityTableFieldAnnotationEnable);
 
         // 公共实体类的父类
-        // strategy.setSuperEntityClass(superEntityClass);
+//         strategy.setSuperEntityClass(superEntityClass);
         // 公共父类
         // strategy.setSuperControllerClass(superControllerClass);
         // 写于父类中的公共字段
         // strategy.setSuperEntityColumns("id");
-        strategy.setInclude(scanner("表名，多个英文逗号分割").split(","));
+//        strategy.setInclude(scanner("表名，多个英文逗号分割").split(","));
+
+        /** 删除文件夹重建 */
+        String codeOutputPathDir = (codeOutputPath+"/"+basePackage+"."+moduleName).replaceAll("\\.", "/");
+        FileUtils.deleteDirectory(new File(codeOutputPathDir));
+        strategy.setInclude(getAllTableNames().split(","));
+        /** 删除文件夹重建 */
+
         strategy.setControllerMappingHyphenStyle(true);
         strategy.setTablePrefix(pc.getModuleName() + "_");
         mpg.setStrategy(strategy);
         mpg.setTemplateEngine(new FreemarkerTemplateEngine());
         mpg.execute();
+
     }
 
+    // 包名配置
+    public static PackageConfig setPackageConfig() {
+        PackageConfig pc = new PackageConfig();
+        pc.setModuleName(moduleName);
+        pc.setParent(basePackage);
+        pc.setController(controllerPackageName);
+        pc.setService(servicePackageName);
+        pc.setServiceImpl(servicePackageName+".impl");
+        pc.setMapper(mapperPackageName);
+        pc.setEntity(modelPackageName);
+        return pc;
+    }
+
+    public static void setHikariDataSource() {
+        if (hikariDataSource==null) {
+            HikariConfig hikariConfig = new HikariConfig();
+            hikariConfig.setJdbcUrl(dbUrl);
+            hikariConfig.setUsername(dbUsername);
+            hikariConfig.setPassword(dbPassword);
+            hikariConfig.setSchema(dbSchema);
+            hikariConfig.setDriverClassName(driverName);
+            hikariConfig.addDataSourceProperty("cachePrepStmts", "true");
+            hikariConfig.addDataSourceProperty("prepStmtCacheSize", "250");
+            hikariConfig.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+            hikariDataSource = new HikariDataSource(hikariConfig);
+        }
+    }
+
+    public static String getAllTableNames() throws SQLException {
+        Connection conn = hikariDataSource.getConnection();
+        String tableNames = null;
+        if ("com.mysql.jdbc.Driver".equals(driverName)) {
+            //从元数据中获取到所有的表名
+            ResultSet rs = conn.getMetaData().getTables(null, null, null, new String[] { "TABLE" });
+            List<String> tables = new ArrayList<>();
+            while(rs.next()) {
+                tables.add(rs.getString(3));
+            }
+            tableNames = String.join(",", tables);
+        } else if ("org.postgresql.Driver".equals(driverName)) {
+            String sql = "select string_agg(tablename,',') as tablenames from pg_tables where schemaname='"+dbSchema+"'";
+            ResultSet rs = conn.createStatement().executeQuery(sql);
+            while (rs.next()) {
+                tableNames = rs.getString("tablenames");
+            }
+        } else {
+            throw new RuntimeException("数据库驱动 "+driverName+" 不正确");
+        }
+        conn.close();
+        return tableNames;
+    }
 }
