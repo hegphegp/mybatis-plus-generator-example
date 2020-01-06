@@ -1,14 +1,14 @@
 server.port: 8083
 
-spring.profiles.active: postgres
+#spring.profiles.active: postgres
 
 spring:
   application:
     name: mybatis-plus-generator-example
   datasource:
-    username: sde
-    password: postgres
-    url: jdbc:postgresql://localhost:5432/test
+    username: root
+    password: icityDB2018!@#
+    url: jdbc:postgresql://localhost:5432/icity
     driver-class-name: org.postgresql.Driver
     type: com.zaxxer.hikari.HikariDataSource
     hikari:

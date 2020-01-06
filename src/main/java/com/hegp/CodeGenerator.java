@@ -35,10 +35,10 @@ public class CodeGenerator {
     // 数据库参数
 //    public static String driverName = "com.mysql.jdbc.Driver";
     public static String driverName = "org.postgresql.Driver";
-    public static String dbUsername = "sde";
-    public static String dbPassword = "postgres";
+    public static String dbUsername = "root";
+    public static String dbPassword = "icityDB2018!@#";
     public static String dbSchema = "public";
-    public static String url = "jdbc:postgresql://localhost:5432/test?useUnicode=true&useSSL=false&characterEncoding=utf8";
+    public static String url = "jdbc:postgresql://localhost:5432/icity?useUnicode=true&useSSL=false&characterEncoding=utf8";
 
     // 模块名称
     public static String author = "hgp";
